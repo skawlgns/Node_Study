@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const bodyParser = require("body-parser");
 const port = 3000;
 
 app.locals.pretty = true; //temp 보기 좋게
@@ -11,32 +12,41 @@ app.get("/template", (req, res) => {
 });
 
 app.use(express.static("public")); // 정적 파일
+app.use(bodyParser.urlencoded({ extended: false }));
+app.get("/form", (req, res) => {
+  res.render("form");
+});
+
+app.get("/form_receiver", (req, res) => {
+  let title = req.query.title;
+  let description = req.query.description;
+  res.send(title + "," + description);
+});
+
+app.post("/form_receiver", (req, res) => {
+  let title = req.body.title;
+  let description = req.body.description;
+  res.send(title + "," + description);
+});
+
+app.get("/topic/:id", (req, res) => {
+  let topics = ["JavaScript is ...", "Nodejs is ...", "Express is ..."];
+  let output = `
+    <a href="/topic?id=0"> JavaScript </a><br>
+    <a href="/topic?id=1"> NodeJs </a><br>
+    <a href="/topic?id=2"> Express </a><br><br>
+    ${topics[req.params.id]}
+  `;
+  res.send(output);
+});
+
+app.get("/topic/:id/:mode", (req, res) => {
+  res.send(req.params.id + "," + req.params.mode);
+});
 
 //홈페이지에 접속했따라는 화면
 app.get("/", (req, res) => {
   res.send("Hello World!");
-});
-
-app.get("/dynamic", (req, res) => {
-  let lis = "";
-  for (let i = 0; i < 5; i++) {
-    lis = lis + "<li>coding</li>";
-  }
-  let time = Date();
-  let output = `<!DOCTYPE html>
-  <html lang="en">
-    <head>
-      <meta charset="UTF-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Document</title>
-    </head>
-    <body>
-      Hello, Static!!
-    </body>
-  </html>
-  `;
-  res.send(lis);
 });
 
 app.get("/route", (req, res) => {
