@@ -10,7 +10,13 @@ app.set("views", "./views_file");
 app.set("view engine", "jade");
 
 app.get("/topic/new", (req, res) => {
-  res.render("new");
+  fs.readdir("data", (err, files) => {
+    if (err) {
+      console.log(err);
+      res.status(500).send("Internal Server Error");
+    }
+    res.render("new", { topics: files });
+  });
 });
 
 app.get("/topic", (req, res) => {
@@ -50,6 +56,7 @@ app.post("/topic", (req, res) => {
     if (err) {
       res.status(500).send("Internal Server Error");
     }
+    res.redirect("/topic/" + title);
   });
 });
 
